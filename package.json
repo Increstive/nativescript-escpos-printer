@@ -1,0 +1,26 @@
+{
+  "name": "nativescript-escpos-printer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "nativescript": {
+    "platforms": {
+      "android": "1.​2.0"
+    }
+  },
+  "dependencies": {
+    "table": "^6.8.0",
+    "typescript": "^4.5.4"
+  },
+  "devDependencies": {
+    "@nativescript/android": "^8.1.1",
+    "@nativescript/types": "^8.1.1"
+  }
+}
