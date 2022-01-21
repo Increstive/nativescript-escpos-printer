@@ -18,11 +18,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "outDir": "plugin"
   },
   "exclude": [
     "node_modules",
-    "tmp",
-    "src/encoder/codepage-encoder.js"
+    "tmp"
   ],
   "include": [
     "src/tests/**/*.ts",

@@ -356,7 +356,7 @@ const strings = {
 /**
  * A library for converting Unicode to obscure single byte codepage for use with thermal printers
  */
-class CodepageEncoder {
+export class CodepageEncoder {
     /**
        * Get list of supported codepages
        *
@@ -521,5 +521,3 @@ class CodepageEncoder {
         return fragments;
     }
 }
-
-module.exports = CodepageEncoder;

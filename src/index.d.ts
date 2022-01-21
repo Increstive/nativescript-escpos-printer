@@ -1,6 +1,6 @@
-import { ZJPrinterCommon } from "./index.common";
-export * from "./encoder/esc-pos-encoder"
-export { PrinterDevice } from './index.common'
+import { ZJPrinterCommon } from "../plugin/index.common";
+export { PrinterDevice } from '../plugin/index.common'
+export { EscPosEncoder } from "../plugin/encoder/esc-pos-encoder"
 
 export type EventHandler = (params: any) => void;
 

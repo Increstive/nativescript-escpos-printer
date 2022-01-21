@@ -3,7 +3,7 @@
 // const Flatten = require('canvas-flatten');
 
 import linewrap from "linewrap";
-import CodepageEncoder from "./codepage-encoder";
+import { CodepageEncoder } from "./codepage-encoder";
 
 const codepageMappings = {
     epson: {
