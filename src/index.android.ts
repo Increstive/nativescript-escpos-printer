@@ -1,4 +1,5 @@
 import { EventHandler, PrinterDevice, ZJPrinterCommon } from "./index.common";
+export * from './encoder'
 
 declare var th;
 

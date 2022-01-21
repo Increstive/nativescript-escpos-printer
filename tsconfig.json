@@ -18,15 +18,18 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "outDir": "plugin"
+    "outDir": "./plugin",
+    "rootDir": "./src"
   },
   "exclude": [
     "node_modules",
-    "tmp"
+    "tmp",
+    "typings"
   ],
   "include": [
     "src/tests/**/*.ts",
-    "src/**/*",
+    "src/**/*.ts",
+    "typings/index.d.ts",
   ],
   "files": [
     "./references.d.ts",
