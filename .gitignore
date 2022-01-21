@@ -26,4 +26,8 @@ typings/
 !.vscode/launch.json
 !.vscode/extensions.json
 
-lib
+*.js.map
+*.js
+*.d.ts
+!src/index.d.ts
+!src/encoder/codepage-encoder.js

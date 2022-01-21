@@ -23,6 +23,10 @@ export class ZJPrinter extends ZJPrinterCommon {
         this.zjPrinter.disconnect()
     }
 
+    public requestPermission(): void {
+
+    }
+
     public async getDeviceList() {
         return new Promise<PrinterDevice>((res, _) => {
             this.zjPrinter.getDeviceList(devices => res(devices));

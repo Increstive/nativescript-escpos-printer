@@ -48,9 +48,9 @@ export class ZJPrinter extends ZJPrinterCommon {
         this.zjPrinter.requestPermission()
     }
 
-    public getDeviceList() {
+    public async getDeviceList() {
         const list = this.zjPrinter.getDeviceList();
-        return list;
+        return Promise.resolve(list);
     }
 
     // Print

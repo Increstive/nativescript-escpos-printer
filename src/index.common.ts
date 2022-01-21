@@ -13,6 +13,7 @@ export abstract class ZJPrinterCommon {
     // Connection
     public abstract connect(printer: PrinterDevice): void;
     public abstract disconnect(): void;
+    public abstract requestPermission(): void;
     public abstract getDeviceList(): Promise<PrinterDevice>;
 
     // Print

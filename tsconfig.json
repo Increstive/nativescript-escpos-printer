@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
@@ -17,11 +18,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "outDir": "lib",
   },
   "exclude": [
     "node_modules",
-    "tmp"
+    "tmp",
+    "src/encoder/codepage-encoder.js"
   ],
   "include": [
     "src/tests/**/*.ts",
