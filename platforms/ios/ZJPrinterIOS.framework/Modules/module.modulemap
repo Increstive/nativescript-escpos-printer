@@ -1,0 +1,6 @@
+framework module ZJPrinterIOS {
+  umbrella header "ZJPrinterIOS.h"
+
+  export *
+  module * { export * }
+}

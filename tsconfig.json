@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
@@ -23,7 +25,7 @@
   ],
   "include": [
     "src/tests/**/*.ts",
-    "src/**/*.ts",
+    "src/**/*",
   ],
   "files": [
     "./references.d.ts",
