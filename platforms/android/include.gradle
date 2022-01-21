@@ -1,3 +1,0 @@
-dependencies {
-    implementation 'com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.0.1'
-}

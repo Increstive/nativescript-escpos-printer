@@ -1,11 +1,12 @@
-import { EventHandler, PrinterDevice, ZJPrinterCommon } from "./index.common";
+import { ConnectionState, EventHandler, PrinterDevice, ZJPrinterCommon } from "./index.common";
+import { Buffer } from 'buffer';
 
 export * from './index.common';
 export * from './encoder'
 
 declare var th;
 
-export enum ConnectionState {
+export enum AndroidConnectionState {
     STATE_NONE = 0,
     STATE_LISTEN = 1,
     STATE_CONNECTING = 2,
@@ -28,11 +29,23 @@ export class ZJPrinter extends ZJPrinterCommon {
 
     constructor(handler: EventHandler, context: android.content.Context) {
         super(handler);
-
         const eventHandler = new th.co.increstive.ns.zj_printer.EventHandler({
             handleEvent: (type: number, value1: number, value2: number) => {
-                console.log(type, value1, value2);
-                handler({ type, value1, value2 });
+                console.log(MessageType[type], value1, value2);
+                if (type === MessageType.MESSAGE_STATE_CHANGE) {
+                    switch (value1) {
+                        case AndroidConnectionState.STATE_NONE:
+                            this.$connectionState.next(ConnectionState.Disconnected);
+                            break;
+                        case AndroidConnectionState.STATE_CONNECTING:
+                            this.$connectionState.next(ConnectionState.Connecting);
+                            break;
+                        case AndroidConnectionState.STATE_CONNECTED:
+                            this.$connectionState.next(ConnectionState.Connected);
+                            break;
+                        default: break;
+                    }
+                }
             }
         });
         this.zjPrinter.init(context, eventHandler);
@@ -40,6 +53,9 @@ export class ZJPrinter extends ZJPrinterCommon {
 
     // Connection
     public connect(printer: PrinterDevice) {
+        if (printer === null || printer === undefined || printer.address === undefined) {
+            return console.warn('Connect require printerDevice.address');
+        }
         this.zjPrinter.connect(printer.address);
     }
 
@@ -58,10 +74,19 @@ export class ZJPrinter extends ZJPrinterCommon {
 
     // Print
     public printText(textToPrint: string): void {
+        if (!this.isConnected) {
+            return console.warn('Printer is not connected');
+        }
         this.zjPrinter.printText(textToPrint);
     }
 
     public printHex(hexToPrint: Uint8Array | string): void {
+        if (!this.isConnected) {
+            return console.warn('Printer is not connected');
+        }
+        if (hexToPrint instanceof Uint8Array) {
+            hexToPrint = Buffer.from(hexToPrint).toString('hex');
+        }
         this.zjPrinter.printHex(hexToPrint);
     }
 }
