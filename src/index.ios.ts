@@ -1,4 +1,7 @@
 import { ConnectionState, EventHandler, PrinterDevice, ZJPrinterCommon } from "./index.common";
+import { Buffer } from 'buffer';
+
+export * from './index.common';
 export * from './encoder'
 
 declare var ZJPrinterIOS;
@@ -10,6 +13,7 @@ export class ZJPrinter extends ZJPrinterCommon {
     constructor(handler: EventHandler) {
         super(handler);
         this.zjPrinter.setupSDK((event) => {
+            console.log('ConnectionStateChanged', event.name)
             switch (event.name) {
                 case 'PrinterConnectedNotification':
                     this.$connectionState.next(ConnectionState.Connected);
@@ -23,9 +27,12 @@ export class ZJPrinter extends ZJPrinterCommon {
     }
 
     // Connection
-    public connect(printer) {
+    public connect(printer: PrinterDevice) {
+        if (printer === null || printer === undefined || printer.native === undefined) {
+            return console.warn('Connect require printerDevice.native');
+        }
         this.$connectionState.next(ConnectionState.Connecting);
-        this.zjPrinter.connect(printer);
+        this.zjPrinter.connect(printer.native);
     }
 
     public disconnect() {
@@ -38,7 +45,6 @@ export class ZJPrinter extends ZJPrinterCommon {
     }
 
     public async getDeviceList() {
-        console.log('LIB getDeviceList')
         return new Promise<PrinterDevice[]>((res, _) => {
             this.zjPrinter.getDeviceList(iosDevice => {
                 const device: PrinterDevice = {
@@ -53,10 +59,19 @@ export class ZJPrinter extends ZJPrinterCommon {
 
     // Print 
     public printText(message: string) {
+        if (!this.isConnected) {
+            return console.warn('Printer is not connected');
+        }
         this.zjPrinter.printText(message);
     }
 
-    public printHex(hexToPrint: string) {
+    public printHex(hexToPrint: Uint8Array | string) {
+        if (!this.isConnected) {
+            return console.warn('Printer is not connected');
+        }
+        if (hexToPrint instanceof Uint8Array) {
+            hexToPrint = Buffer.from(hexToPrint).toString('hex');
+        }
         this.zjPrinter.printHex(hexToPrint);
     }
 

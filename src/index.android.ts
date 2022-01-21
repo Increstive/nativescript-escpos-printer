@@ -1,4 +1,6 @@
 import { EventHandler, PrinterDevice, ZJPrinterCommon } from "./index.common";
+
+export * from './index.common';
 export * from './encoder'
 
 declare var th;
@@ -59,7 +61,7 @@ export class ZJPrinter extends ZJPrinterCommon {
         this.zjPrinter.printText(textToPrint);
     }
 
-    public printHex(hexToPrint: string): void {
+    public printHex(hexToPrint: Uint8Array | string): void {
         this.zjPrinter.printHex(hexToPrint);
     }
 }
