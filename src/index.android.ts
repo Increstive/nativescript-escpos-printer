@@ -4,8 +4,6 @@ import { Buffer } from 'buffer';
 export * from './index.common';
 export * from './encoder'
 
-declare var th;
-
 export enum AndroidConnectionState {
     STATE_NONE = 0,
     STATE_LISTEN = 1,
@@ -30,7 +28,7 @@ export class ZJPrinter extends ZJPrinterCommon {
     constructor(handler: EventHandler, context: android.content.Context) {
         super(handler);
         const eventHandler = new th.co.increstive.ns.zj_printer.EventHandler({
-            handleEvent: (type: number, value1: number, value2: number) => {
+            handleEvent: (type: number, value1: number, value2: string) => {
                 console.log(MessageType[type], value1, value2);
                 if (type === MessageType.MESSAGE_STATE_CHANGE) {
                     switch (value1) {
@@ -68,7 +66,17 @@ export class ZJPrinter extends ZJPrinterCommon {
     }
 
     public async getDeviceList() {
-        const list = this.zjPrinter.getDeviceList();
+        const natives = this.zjPrinter.getDeviceList();
+        const list = [];
+        for (let i = 0; i < natives.length; i++) {
+            const native = natives[i];
+            const device: PrinterDevice = {
+                name: native.name,
+                address: native.address,
+                native
+            }
+            list.push(device);
+        }
         return Promise.resolve(list);
     }
 

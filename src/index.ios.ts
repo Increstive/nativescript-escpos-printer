@@ -4,8 +4,6 @@ import { Buffer } from 'buffer';
 export * from './index.common';
 export * from './encoder'
 
-declare var ZJPrinterIOS;
-
 export class ZJPrinter extends ZJPrinterCommon {
 
     private zjPrinter = new ZJPrinterIOS();
