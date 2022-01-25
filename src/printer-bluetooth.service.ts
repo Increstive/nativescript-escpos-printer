@@ -30,6 +30,10 @@ export class PrinterBluetoothService {
         return this.connectedPeripheral !== undefined;
     }
 
+    public get connected(): Peripheral {
+        return this.connectedPeripheral
+    }
+
     constructor(private zone: NgZone) { }
 
     // Permission
@@ -86,7 +90,7 @@ export class PrinterBluetoothService {
             return console.warn('Already has connection')
         }
         try {
-            await this.ble.connect({
+            return await this.ble.connect({
                 UUID: peripheralUUID,
                 onConnected: data => this.peripheralConnected(data, isPrintOnSuccess),
                 onDisconnected: data => this.peripheralDisconnected(data),
@@ -101,7 +105,7 @@ export class PrinterBluetoothService {
             return console.warn('Not connected')
         }
         const UUID = this.connectedPeripheral.UUID;
-        await this.ble.disconnect({ UUID });
+        return await this.ble.disconnect({ UUID });
     }
 
     private async peripheralConnected(data: Peripheral, isPrintOnSuccess: boolean) {
