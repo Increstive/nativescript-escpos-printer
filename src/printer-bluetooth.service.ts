@@ -34,6 +34,10 @@ export class PrinterBluetoothService {
         return this.connectedPeripheral
     }
 
+    public get isBluetoothEnabled() {
+        return this.ble.isBluetoothEnabled();
+    }
+
     constructor(private zone: NgZone) { }
 
     // Permission
