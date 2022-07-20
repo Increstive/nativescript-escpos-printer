@@ -220,9 +220,11 @@ export class EscPosEncoder {
        *
       */
     private _encode(value: string): Uint8Array {
-        if (this._codepage != 'auto') {
-            return CodepageEncoder.encode(value, this._codepage);
-        }
+        // if (this._codepage != 'auto') {
+        //     return CodepageEncoder.encode(value, this._codepage);
+        // }
+        const encoder = new TextEncoder();
+        return encoder.encode(value);
     }
 
     /**
