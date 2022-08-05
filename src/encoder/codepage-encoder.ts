@@ -394,6 +394,10 @@ export class CodepageEncoder {
        *
        */
     static supports(codepage) {
+        if (codepage === 'unicode') {
+            return true;
+        }
+
         if (typeof definitions[codepage] === 'undefined') {
             return false;
         }

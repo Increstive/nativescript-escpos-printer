@@ -161,11 +161,16 @@ export class PrinterBluetoothService {
 
     // Utils
 
-    public getEncoder() {
-        const option = { codepageMapping: { 'cp874': 0xff } };
+    public getEncoder(codepage: 'cp874' | 'unicode' = 'cp874') {
+        const option = {
+            codepageMapping: {
+                'cp874': 0xff,
+                'unicode': 0xff,
+            }
+        };
         const encoder = new EscPosEncoder(option)
         return encoder.initialize()
-            .codepage('cp874');
+            .codepage(codepage);
     }
 
 }

@@ -220,11 +220,13 @@ export class EscPosEncoder {
        *
       */
     private _encode(value: string): Uint8Array {
-        // if (this._codepage != 'auto') {
-        //     return CodepageEncoder.encode(value, this._codepage);
-        // }
-        const encoder = new TextEncoder();
-        return encoder.encode(value);
+        console.log(this._codepage)
+        if (this._codepage === 'unicode') {
+            const encoder = new TextEncoder();
+            return encoder.encode(value);
+        } else if (this._codepage != 'auto') {
+            return CodepageEncoder.encode(value, this._codepage);
+        }
     }
 
     /**
@@ -352,6 +354,11 @@ export class EscPosEncoder {
        */
     codepage(codepage: string): EscPosEncoder {
         if (codepage === 'auto') {
+            this._codepage = codepage;
+            return this;
+        }
+
+        if (codepage === 'unicode') {
             this._codepage = codepage;
             return this;
         }
