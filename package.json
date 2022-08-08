@@ -20,11 +20,17 @@
     "@angular/compiler-cli": "^10.2.5",
     "@angular/core": "^10.2.5",
     "@nativescript-community/ble": "^3.1.5",
+    "@types/node": "^18.6.4",
     "buffer": "^6.0.3",
+    "canvas": "^2.9.3",
+    "canvas-dither": "^1.0.1",
+    "canvas-flatten": "^1.0.1",
     "linewrap": "^0.2.1",
+    "nodemon": "^2.0.19",
     "rxjs": "^6.5.3",
     "table": "^6.8.0",
-    "typescript": "3.9"
+    "ts-node": "^10.9.1",
+    "typescript": "^3.9.10"
   },
   "devDependencies": {
     "@nativescript/android": "^8.1.1",

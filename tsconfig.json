@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    // "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
@@ -10,7 +10,7 @@
     "experimentalDecorators": true,
     "noEmitHelpers": true,
     "target": "es2017",
-    "module": "esnext",
+    "module": "CommonJS",
     "lib": [
       "es2019",
       "dom"
@@ -30,6 +30,7 @@
     "src/tests/**/*.ts",
     "src/**/*.ts",
     "typings/index.d.ts",
+    "src/test.ts",
   ],
   "files": [
     "./references.d.ts",
