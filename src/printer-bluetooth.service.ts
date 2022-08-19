@@ -14,6 +14,10 @@ export class PrinterBluetoothService {
 
     private ble = new Bluetooth();
 
+    // Builtin Printer
+    private builtinPrinterSocket: android.bluetooth.BluetoothSocket;
+    private builtinPrinterOutStream: java.io.OutputStream;
+
     private connectedPeripheral: Peripheral;
     public peripherals: Peripheral[] = [];
     private activeUUIDs = {
@@ -27,7 +31,7 @@ export class PrinterBluetoothService {
     // Getter
 
     public get isConnected(): boolean {
-        return this.connectedPeripheral !== undefined;
+        return this.connectedPeripheral !== undefined || this.builtinPrinterOutStream !== undefined;
     }
 
     public get connected(): Peripheral {
@@ -105,6 +109,14 @@ export class PrinterBluetoothService {
     }
 
     public async disconnect() {
+        if (this.builtinPrinterSocket) {
+            this.builtinPrinterSocket.close();
+            this.builtinPrinterSocket = undefined;
+        }
+        if (this.builtinPrinterOutStream) {
+            this.builtinPrinterOutStream.close();
+            this.builtinPrinterOutStream = undefined;
+        }
         if (!this.isConnected) {
             return console.warn('Not connected')
         }
@@ -153,10 +165,16 @@ export class PrinterBluetoothService {
 
     public async write(hexData: Uint8Array) {
         console.log('Write data', this.activeUUIDs, hexData.length, 'bytes');
-        return this.ble.write({
-            ...this.activeUUIDs,
-            value: hexData,
-        })
+
+        if (this.builtinPrinterOutStream) {
+            const byteArray = this.arrayToNativeByteArray(hexData);
+            this.builtinPrinterOutStream.write(byteArray, 0, byteArray.length)
+        } else {
+            return this.ble.write({
+                ...this.activeUUIDs,
+                value: hexData,
+            })
+        }
     }
 
     // Utils
@@ -164,13 +182,72 @@ export class PrinterBluetoothService {
     public getEncoder(codepage: 'cp874' | 'unicode' = 'cp874') {
         const option = {
             codepageMapping: {
-                'cp874': 0xff,
+                'cp874': this.builtinPrinterOutStream ? 0x15 : 0xff,
                 'unicode': 0xff,
             }
         };
         const encoder = new EscPosEncoder(option)
-        return encoder.initialize()
-            .codepage(codepage);
+        encoder.initialize()
+
+        if (this.builtinPrinterOutStream) {
+            return encoder
+                .raw([0x1c, 0x2e])
+                .codepage(codepage);
+        }
+
+        return encoder.codepage(codepage);
+    }
+
+    // SUNMI
+
+    public connectToBuiltinPrinter() {
+        const adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter();
+
+        if (adapter === null) {
+            return alert('Bluetooth device is unavailable')
+        }
+
+        if (!adapter.isEnabled()) {
+            return alert('Bluetooth device not detected. Please enable bluetooth.')
+        }
+
+        const devices = adapter.getBondedDevices().toArray() as Array<globalAndroid.bluetooth.BluetoothDevice>;
+        let device = null;
+
+        for (let index = 0; index < devices.length; index++) {
+            const d = devices[index];
+            if (d.getAddress() === '00:11:22:33:44:55') {
+                device = d;
+                break;
+            }
+        }
+
+        if (device === null) {
+            return alert('Builtin Printer not found');
+        }
+
+        const uuid = java.util.UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+        const socket = device.createRfcommSocketToServiceRecord(uuid);
+
+        try {
+            socket.connect();
+        } catch (error) {
+            console.log(error);
+            return alert('Builtin Printer connect failed');
+        }
+
+        this.builtinPrinterSocket = socket;
+        this.builtinPrinterOutStream = socket.getOutputStream();
+    }
+
+    private arrayToNativeByteArray(val: Uint8Array) {
+        const length = val.length;
+        const result = Array.create('byte', length);
+        for (let i = 0; i < length; i++) {
+            result[i] = val[i];
+        }
+        console.log(result);
+        return result;
     }
 
 }
