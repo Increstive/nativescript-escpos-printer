@@ -9,6 +9,10 @@ export interface PeripheralFilter {
     manufacturerData?: ArrayBuffer;
 }
 
+declare var android;
+declare var java;
+declare var globalAndroid;
+
 @Injectable({ providedIn: 'root' })
 export class PrinterBluetoothService {
 
