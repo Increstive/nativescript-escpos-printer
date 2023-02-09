@@ -16,7 +16,7 @@ declare var globalAndroid;
 @Injectable({ providedIn: 'root' })
 export class PrinterBluetoothService {
 
-    private ble = new Bluetooth();
+    private ble = new Bluetooth({ restoreIdentifier: null });
 
     // Builtin Printer
     private builtinPrinterSocket: android.bluetooth.BluetoothSocket;
