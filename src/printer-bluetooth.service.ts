@@ -50,11 +50,14 @@ export class PrinterBluetoothService {
 
     // Permission
 
+    public async getHasLocationPermission() {
+        return await this.ble.hasLocationPermission();
+    }
+
     public async checkPermission() {
-        const isGranted = await this.ble.hasLocationPermission();
+        const isGranted = await this.getHasLocationPermission();
         if (!isGranted) {
-            this.ble.requestLocationPermission();
-            return false;
+            return this.ble.requestLocationPermission();
         }
         return true;
     }
