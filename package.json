@@ -1,33 +1,40 @@
 {
-  "name": "nativescript-escpos-printer",
-  "version": "1.0.2",
-  "description": "",
-  "main": "./plugin",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ngc",
-    "postinstall": "npm run build"
-  },
-  "author": "",
-  "license": "ISC",
-  "nativescript": {
-    "platforms": {
-      "android": "1.​2.0"
+    "name": "nativescript-escpos-printer",
+    "version": "1.0.2",
+    "description": "",
+    "main": "./plugin",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "ngc",
+        "postinstall": "npm run build"
+    },
+    "author": "",
+    "license": "ISC",
+    "nativescript": {
+        "platforms": {
+            "android": "1.​2.0"
+        }
+    },
+    "dependencies": {
+        "@angular/compiler": "^10.2.5",
+        "@angular/compiler-cli": "^10.2.5",
+        "@angular/core": "^10.2.5",
+        "@nativescript-community/ble": "^3.1.5",
+        "@types/node": "^14.18.38",
+        "buffer": "^6.0.3",
+        "get-pixels": "^3.3.3",
+        "linewrap": "^0.2.1",
+        "ndarray": "^1.0.19",
+        "pngjs": "^7.0.0",
+        "rxjs": "^6.5.3",
+        "table": "^6.8.0",
+        "typescript": "~4.0"
+    },
+    "devDependencies": {
+        "@nativescript/android": "^8.1.1",
+        "@nativescript/types": "^8.1.1",
+        "@types/get-pixels": "^3.3.2",
+        "@types/ndarray": "^1.0.11",
+        "@types/pngjs": "^6.0.1"
     }
-  },
-  "dependencies": {
-    "@angular/compiler": "^10.2.5",
-    "@angular/compiler-cli": "^10.2.5",
-    "@angular/core": "^10.2.5",
-    "@nativescript-community/ble": "^3.1.5",
-    "buffer": "^6.0.3",
-    "linewrap": "^0.2.1",
-    "rxjs": "^6.5.3",
-    "table": "^6.8.0",
-    "typescript": "3.9"
-  },
-  "devDependencies": {
-    "@nativescript/android": "^8.1.1",
-    "@nativescript/types": "^8.1.1"
-  }
 }

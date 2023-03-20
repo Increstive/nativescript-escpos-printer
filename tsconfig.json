@@ -9,8 +9,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noEmitHelpers": true,
-    "target": "es2017",
-    "module": "esnext",
+    "target": "es5",
+    "module": "CommonJS",
     "lib": [
       "es2019",
       "dom"

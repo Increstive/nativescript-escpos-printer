@@ -3,7 +3,12 @@
 // const Flatten = require('canvas-flatten');
 
 import linewrap from "linewrap";
+import { PNG } from "pngjs/browser";
 import { CodepageEncoder } from "./codepage-encoder";
+import Image from "./image";
+
+// type AnyCase<T extends string> = Uppercase<T> | Lowercase<T>;
+type RasterMode = 'normal' | 'dw' | 'dh' | 'dwdh' | 'dhdw' | 'dwh' | 'dhw';
 
 const codepageMappings = {
     epson: {
@@ -185,7 +190,7 @@ export class EscPosEncoder {
             width: null,
             embedded: false,
             wordWrap: true,
-            imageMode: 'column',
+            imageMode: 'raster',
             codepageMapping: 'legacy',
             codepageCandidates: [
                 'cp437', 'cp858', 'cp860', 'cp861', 'cp863', 'cp865',
@@ -1116,7 +1121,8 @@ export class EscPosEncoder {
        * @return {object}                  Return the object, for easy chaining commands
        *
        */
-    image(element: object, width: number, height: number, algorithm: string, threshold: number): EscPosEncoder {
+    image(imageBase64: string, width: number, height: number, algorithm?: string, threshold?: number): EscPosEncoder {
+
         // if (this._embedded) {
         //     throw new Error('Images are not supported in table cells or boxes');
         // }
@@ -1137,6 +1143,8 @@ export class EscPosEncoder {
         //     threshold = 128;
         // }
 
+        console.log('print image')
+
         // const canvas = createCanvas(width, height);
         // const context = canvas.getContext('2d');
         // context.drawImage(element, 0, 0, width, height);
@@ -1151,84 +1159,126 @@ export class EscPosEncoder {
         //     case 'atkinson': image = Dither.atkinson(image); break;
         // }
 
-        // const getPixel = (x, y) => x < width && y < height ? (image.data[((width * y) + x) * 4] > 0 ? 0 : 1) : 0;
+        // const imageData = Uint8Array.from(atob(imageBase64), c => c.charCodeAt(0))
 
-        // const getColumnData = (width, height) => {
-        //     const data = [];
+        // console.log(imageData);
 
-        //     for (let s = 0; s < Math.ceil(height / 24); s++) {
-        //         const bytes = new Uint8Array(width * 3);
+        const buffer = Buffer.from(imageBase64, 'base64');
+        const png = PNG.sync.read(buffer);
 
-        //         for (let x = 0; x < width; x++) {
-        //             for (let c = 0; c < 3; c++) {
-        //                 for (let b = 0; b < 8; b++) {
-        //                     bytes[(x * 3) + c] |= getPixel(x, (s * 24) + b + (8 * c)) << (7 - b);
-        //                 }
-        //             }
-        //         }
+        const imageData = png.data;
 
-        //         data.push(bytes);
-        //     }
+        console.log(imageData)
 
-        //     return data;
-        // };
+        const getPixel = (x, y) => x < width && y < height ? (imageData[((width * y) + x) * 4] > 0 ? 0 : 1) : 0;
 
-        // const getRowData = (width, height) => {
-        //     const bytes = new Uint8Array((width * height) >> 3);
+        const getColumnData = (width, height) => {
+            const data = [];
 
-        //     for (let y = 0; y < height; y++) {
-        //         for (let x = 0; x < width; x = x + 8) {
-        //             for (let b = 0; b < 8; b++) {
-        //                 bytes[(y * (width >> 3)) + (x >> 3)] |= getPixel(x + b, y) << (7 - b);
-        //             }
-        //         }
-        //     }
+            for (let s = 0; s < Math.ceil(height / 24); s++) {
+                const bytes = new Uint8Array(width * 3);
 
-        //     return bytes;
-        // };
+                for (let x = 0; x < width; x++) {
+                    for (let c = 0; c < 3; c++) {
+                        for (let b = 0; b < 8; b++) {
+                            bytes[(x * 3) + c] |= getPixel(x, (s * 24) + b + (8 * c)) << (7 - b);
+                        }
+                    }
+                }
+
+                data.push(bytes);
+            }
+
+            console.log(data)
+
+            return data;
+        };
+
+        const getRowData = (width, height) => {
+            const bytes = new Uint8Array((width * height) >> 3);
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x = x + 8) {
+                    for (let b = 0; b < 8; b++) {
+                        bytes[(y * (width >> 3)) + (x >> 3)] |= getPixel(x + b, y) << (7 - b);
+                    }
+                }
+            }
+
+            return bytes;
+        };
 
 
-        // if (this._cursor != 0) {
-        //     this.newline();
-        // }
+        if (this._cursor != 0) {
+            this.newline();
+        }
 
-        // /* Encode images with ESC * */
+        /* Encode images with ESC * */
 
-        // if (this._options.imageMode == 'column') {
-        //     this._queue([
-        //         0x1b, 0x33, 0x24,
-        //     ]);
+        if (this._options.imageMode == 'column') {
+            this._queue([
+                0x1b, 0x33, 0x24,
+            ]);
 
-        //     getColumnData(width, height).forEach((bytes) => {
-        //         this._queue([
-        //             0x1b, 0x2a, 0x21,
-        //             (width) & 0xff, (((width) >> 8) & 0xff),
-        //             bytes,
-        //             0x0a,
-        //         ]);
-        //     });
+            getColumnData(width, height).forEach((bytes) => {
+                this._queue([
+                    0x1b, 0x2a, 0x21,
+                    (width) & 0xff, (((width) >> 8) & 0xff),
+                    bytes,
+                    0x0a,
+                ]);
+            });
 
-        //     this._queue([
-        //         0x1b, 0x32,
-        //     ]);
-        // }
+            this._queue([
+                0x1b, 0x32,
+            ]);
+        }
 
-        // /* Encode images with GS v */
+        /* Encode images with GS v */
 
-        // if (this._options.imageMode == 'raster') {
-        //     this._queue([
-        //         0x1d, 0x76, 0x30, 0x00,
-        //         (width >> 3) & 0xff, (((width >> 3) >> 8) & 0xff),
-        //         height & 0xff, ((height >> 8) & 0xff),
-        //         getRowData(width, height),
-        //     ]);
-        // }
+        if (this._options.imageMode == 'raster') {
+            this._queue([
+                0x1d, 0x76, 0x30, 0x00,
+                (width >> 3) & 0xff, (((width >> 3) >> 8) & 0xff),
+                height & 0xff, ((height >> 8) & 0xff),
+                getRowData(width, height),
+            ]);
+        }
 
-        // this._flush();
+        this._flush();
 
-        // return this;
         return this;
     }
+
+
+    /**
+   * [raster description]
+   * @param  {[type]} image [description]
+   * @param  {[type]} mode  Raster mode (
+   * @return {[Printer]} printer  [the escpos printer instance]
+   */
+    raster(imageBase64: string, mode: RasterMode = 'normal') {
+        const image = Image.load(imageBase64)
+        // if (!(image instanceof Image))
+        //     throw new TypeError('Only escpos.Image supported');
+        mode = mode.toLowerCase() as RasterMode;
+        if (mode === 'dhdw' ||
+            mode === 'dwh' ||
+            mode === 'dhw') mode = 'dwdh';
+        const raster = image.toRaster();
+        // const header = _.GSV0_FORMAT[`GSV0_${mode}` as const];
+        const header = [0x1d, 0x76, 0x30, 0x00]
+        this._queue(header);
+        this._queue([
+            raster.width & 0xFF,
+            (raster.width >> 8) & 0xFF,
+            raster.height & 0xFF,
+            (raster.height >> 8) & 0xFF
+        ])
+        this._queue(raster.data);
+        this._flush();
+        return this;
+    };
 
     /**
        * Cut paper
