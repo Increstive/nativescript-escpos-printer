@@ -7,6 +7,9 @@ import { PNG } from "pngjs/browser";
 import { CodepageEncoder } from "./codepage-encoder";
 import Image from "./image";
 
+import Flatten from "canvas-flatten";
+import Dither from "canvas-dither";
+
 // type AnyCase<T extends string> = Uppercase<T> | Lowercase<T>;
 type RasterMode = 'normal' | 'dw' | 'dh' | 'dwdh' | 'dhdw' | 'dwh' | 'dhw';
 
@@ -1123,9 +1126,12 @@ export class EscPosEncoder {
        */
     image(imageBase64: string): EscPosEncoder {
         const buffer = Buffer.from(imageBase64, 'base64');
-        const png = PNG.sync.read(buffer);
-
+        let png = PNG.sync.read(buffer);
         const { width, height } = png;
+
+        // Dither
+        png = Flatten.flatten(png, [0xff, 0xff, 0xff]);
+        png = Dither.floydsteinberg(png);
 
         const imageData = png.data;
 

@@ -22,6 +22,8 @@
         "@nativescript-community/ble": "^3.1.5",
         "@types/node": "^14.18.38",
         "buffer": "^6.0.3",
+        "canvas-dither": "^1.0.1",
+        "canvas-flatten": "^1.0.1",
         "get-pixels": "^3.3.3",
         "linewrap": "^0.2.1",
         "ndarray": "^1.0.19",
