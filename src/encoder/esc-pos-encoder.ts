@@ -190,7 +190,7 @@ export class EscPosEncoder {
             width: null,
             embedded: false,
             wordWrap: true,
-            imageMode: 'raster',
+            imageMode: 'column',
             codepageMapping: 'legacy',
             codepageCandidates: [
                 'cp437', 'cp858', 'cp860', 'cp861', 'cp863', 'cp865',
@@ -1121,54 +1121,13 @@ export class EscPosEncoder {
        * @return {object}                  Return the object, for easy chaining commands
        *
        */
-    image(imageBase64: string, width: number, height: number, algorithm?: string, threshold?: number): EscPosEncoder {
-
-        // if (this._embedded) {
-        //     throw new Error('Images are not supported in table cells or boxes');
-        // }
-
-        // if (width % 8 !== 0) {
-        //     throw new Error('Width must be a multiple of 8');
-        // }
-
-        // if (height % 8 !== 0) {
-        //     throw new Error('Height must be a multiple of 8');
-        // }
-
-        // if (typeof algorithm === 'undefined') {
-        //     algorithm = 'threshold';
-        // }
-
-        // if (typeof threshold === 'undefined') {
-        //     threshold = 128;
-        // }
-
-        console.log('print image')
-
-        // const canvas = createCanvas(width, height);
-        // const context = canvas.getContext('2d');
-        // context.drawImage(element, 0, 0, width, height);
-        // let image = context.getImageData(0, 0, width, height);
-
-        // image = Flatten.flatten(image, [0xff, 0xff, 0xff]);
-
-        // switch (algorithm) {
-        //     case 'threshold': image = Dither.threshold(image, threshold); break;
-        //     case 'bayer': image = Dither.bayer(image, threshold); break;
-        //     case 'floydsteinberg': image = Dither.floydsteinberg(image); break;
-        //     case 'atkinson': image = Dither.atkinson(image); break;
-        // }
-
-        // const imageData = Uint8Array.from(atob(imageBase64), c => c.charCodeAt(0))
-
-        // console.log(imageData);
-
+    image(imageBase64: string): EscPosEncoder {
         const buffer = Buffer.from(imageBase64, 'base64');
         const png = PNG.sync.read(buffer);
 
-        const imageData = png.data;
+        const { width, height } = png;
 
-        console.log(imageData)
+        const imageData = png.data;
 
         const getPixel = (x, y) => x < width && y < height ? (imageData[((width * y) + x) * 4] > 0 ? 0 : 1) : 0;
 
@@ -1188,8 +1147,6 @@ export class EscPosEncoder {
 
                 data.push(bytes);
             }
-
-            console.log(data)
 
             return data;
         };
@@ -1266,7 +1223,6 @@ export class EscPosEncoder {
             mode === 'dwh' ||
             mode === 'dhw') mode = 'dwdh';
         const raster = image.toRaster();
-        // const header = _.GSV0_FORMAT[`GSV0_${mode}` as const];
         const header = [0x1d, 0x76, 0x30, 0x00]
         this._queue(header);
         this._queue([
