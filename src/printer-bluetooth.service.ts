@@ -57,7 +57,12 @@ export class PrinterBluetoothService {
     public async checkPermission() {
         const isGranted = await this.getHasLocationPermission();
         if (!isGranted) {
-            return this.ble.requestLocationPermission();
+            try {
+                const isRequestGrant = await this.ble.requestLocationPermission();
+                return isRequestGrant;
+            } catch (error) {
+                return error;
+            }
         }
         return true;
     }
@@ -177,10 +182,13 @@ export class PrinterBluetoothService {
             const byteArray = this.arrayToNativeByteArray(hexData);
             this.builtinPrinterOutStream.write(byteArray, 0, byteArray.length)
         } else {
-            return this.ble.write({
-                ...this.activeUUIDs,
-                value: hexData,
-            })
+            const chunkSize = 512;
+            for (let index = 0; index < hexData.length; index += 512) {
+                await this.ble.write({
+                    ...this.activeUUIDs,
+                    value: hexData.slice(index, index + chunkSize),
+                })
+            }
         }
     }
 
