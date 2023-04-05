@@ -228,7 +228,6 @@ export class EscPosEncoder {
        *
       */
     private _encode(value: string): Uint8Array {
-        console.log(this._codepage)
         if (this._codepage === 'unicode') {
             const encoder = new TextEncoder();
             return encoder.encode(value);

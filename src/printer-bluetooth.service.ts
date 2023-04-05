@@ -76,7 +76,7 @@ export class PrinterBluetoothService {
 
         this.clearPheripherals();
 
-        const seconds = 4;
+        const seconds = 3;
         filters = filters || [{ serviceUUID: '18F0' }];
 
         const scanOptions = {
@@ -99,7 +99,6 @@ export class PrinterBluetoothService {
             return;
         }
         this.peripherals.unshift(peripheral);
-        console.log(peripheral)
         this.peripheralsChanged.emit(this.peripherals);
     }
 
@@ -137,7 +136,6 @@ export class PrinterBluetoothService {
     }
 
     private async peripheralConnected(data: Peripheral, isPrintOnSuccess: boolean) {
-        console.log('peripheralConnected');
         this.connectedPeripheral = data;
         // Discover Service
         const { services } = await this.ble.discoverAll({ peripheralUUID: data.UUID });
@@ -150,8 +148,6 @@ export class PrinterBluetoothService {
         this.activeUUIDs.peripheralUUID = data.UUID;
         this.activeUUIDs.serviceUUID = sid;
         this.activeUUIDs.characteristicUUID = c.UUID;
-
-        console.log(this.activeUUIDs);
 
         if (isPrintOnSuccess) {
             const helloData = this.getEncoder()
@@ -176,8 +172,7 @@ export class PrinterBluetoothService {
     // Read & Write
 
     public async write(hexData: Uint8Array) {
-        console.log('Write data', this.activeUUIDs, hexData.length, 'bytes');
-
+        console.log('Printer write data', this.activeUUIDs, hexData.length, 'bytes');
         if (this.builtinPrinterOutStream) {
             const byteArray = this.arrayToNativeByteArray(hexData);
             this.builtinPrinterOutStream.write(byteArray, 0, byteArray.length)
@@ -247,7 +242,7 @@ export class PrinterBluetoothService {
         try {
             socket.connect();
         } catch (error) {
-            console.log(error);
+            console.error('Builtin Printer connect failed', error);
             return alert('Builtin Printer connect failed');
         }
 
@@ -261,7 +256,6 @@ export class PrinterBluetoothService {
         for (let i = 0; i < length; i++) {
             result[i] = val[i];
         }
-        console.log(result);
         return result;
     }
 
