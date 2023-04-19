@@ -1248,7 +1248,7 @@ export class EscPosEncoder {
        * @return {object}                  Return the object, for easy chaining commands
        *
        */
-    cut(value: string): EscPosEncoder {
+    cut(value: string, feed: number = 0): EscPosEncoder {
         if (this._embedded) {
             throw new Error('Cut is not supported in table cells or boxes');
         }
@@ -1256,11 +1256,11 @@ export class EscPosEncoder {
         let data = 0x00;
 
         if (value == 'partial') {
-            data = 0x01;
+            data = 0x42;
         }
 
         this._queue([
-            0x1d, 0x56, data,
+            0x1d, 0x56, data, feed,
         ]);
 
         return this;
