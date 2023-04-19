@@ -231,7 +231,7 @@ export class EscPosEncoder {
         if (this._codepage === 'unicode') {
             const encoder = new TextEncoder();
             return encoder.encode(value);
-        } else if (this._codepage != 'auto') {
+        } else if (this._codepage != 'unicode') {
             return CodepageEncoder.encode(value, this._codepage);
         }
     }

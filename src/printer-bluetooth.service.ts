@@ -189,11 +189,10 @@ export class PrinterBluetoothService {
 
     // Utils
 
-    public getEncoder(codepage: 'cp874' | 'unicode' = 'cp874') {
+    public getEncoder(codepage: string = 'cp874', thaiCodepage: number = 0xff) {
         const option = {
             codepageMapping: {
-                'cp874': this.builtinPrinterOutStream ? 0x15 : 0xff,
-                'unicode': 0xff,
+                [codepage]: thaiCodepage
             }
         };
         const encoder = new EscPosEncoder(option)
