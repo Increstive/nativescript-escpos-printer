@@ -4,6 +4,8 @@
 
 import linewrap from "linewrap";
 import { PNG } from "pngjs/browser";
+import { Buffer } from "buffer";
+
 import { CodepageEncoder } from "./codepage-encoder";
 import Image from "./image";
 

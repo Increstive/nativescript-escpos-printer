@@ -2,6 +2,7 @@
 // import getPixels from "get-pixels/node-pixels";
 // import { NdArray } from "ndarray";
 import { PNG } from "pngjs/browser";
+import { Buffer } from "buffer";
 
 export type ImageMimeType = 'image/png' | 'image/jpg' | 'image/jpeg' | 'image/gif' | 'image/bmp';
 
