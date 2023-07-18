@@ -11,6 +11,7 @@ import Image from "./image";
 
 import Flatten from "canvas-flatten";
 import Dither from "canvas-dither";
+import { ThaiThreePassEncoder } from "../three-pass-printing";
 
 // type AnyCase<T extends string> = Uppercase<T> | Lowercase<T>;
 type RasterMode = 'normal' | 'dw' | 'dh' | 'dwdh' | 'dhdw' | 'dwh' | 'dhw';
@@ -222,6 +223,10 @@ export class EscPosEncoder {
         };
     }
 
+    public setEnableThaiThreePass(isEnable: boolean) {
+        this._options.enableThaiThreePass = isEnable;
+    }
+
     /**
        * Encode a string with the current code page
        *
@@ -230,6 +235,11 @@ export class EscPosEncoder {
        *
       */
     private _encode(value: string): Uint8Array {
+        if (this._options.enableThaiThreePass) {
+            const encoder = new ThaiThreePassEncoder()
+            const chars = encoder.encode(value, 32, this._codepage)
+            return new Uint8Array(chars)
+        }
         if (this._codepage === 'unicode') {
             const encoder = new TextEncoder();
             return encoder.encode(value);

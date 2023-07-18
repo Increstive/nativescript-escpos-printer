@@ -100,20 +100,21 @@ export class ThaiThreePassEncoder {
         return baseline.length;
     }
 
-    public threePassPrinting(content: string, charsPerLine = 32, codepage = 'cp874') {
+    public encode(content: string, charsPerLine = 32, codepage = 'cp874') {
         const offsetLines = this.getOffsetLines(content, codepage);
-        return this.applyLineBreak(offsetLines, charsPerLine);
+        const { lines } = this.applyLineBreak(offsetLines, charsPerLine);
+        return lines;
     }
 
     // Table
 
-    public pairs(rows: string[][]) {
+    public pairs(rows: string[][], colLeftSize: number, colRightSize: number) {
         rows.forEach(([colLeft, colRight]) => {
-            const colLeftLines = this.getOffsetLines(colLeft);
-            const colRightLines = this.getOffsetLines(colRight);
+            const linesL = this.getOffsetLines(colLeft);
+            const linesR = this.getOffsetLines(colRight);
 
-            const colLeftLength = colLeftLines.baseline.length;
-            const colRightLength = colLeftLines.baseline.length;
+            const encodedL = this.applyLineBreak(linesL, colLeftSize);
+            const encodedR = this.applyLineBreak(linesR, colRightSize);
         })
     }
 
@@ -167,16 +168,36 @@ export class ThaiThreePassEncoder {
     }
 
     private applyLineBreak(offsetLines: OffsetLinesData, charsPerLine: number) {
+        let lineCounts = 0;
         const lines: number[] = [];
         const { baseline, upper, lower } = offsetLines;
         for (let i = 0; i < baseline.length; i += charsPerLine) {
-            lines.push(...upper.slice(i, i + charsPerLine))
-            lines.push(...newline);
-            lines.push(...baseline.slice(i, i + charsPerLine));
-            lines.push(...newline);
-            lines.push(...lower.slice(i, i + charsPerLine));
-            lines.push(...newline);
+            lineCounts++;
+            const lineUpper = upper.slice(i, i + charsPerLine)
+            const lineBase = baseline.slice(i, i + charsPerLine)
+            const lineLower = lower.slice(i, i + charsPerLine)
+
+            const lengthUpper = lineUpper.filter(i => i !== 32).length
+            const lengthBase = lineBase.filter(i => i !== 32).length
+            const lengthLower = lineLower.filter(i => i !== 32).length
+
+            console.log(lengthUpper, lengthBase, lengthLower)
+
+            if (lengthUpper > 0) {
+                lines.push(...lineUpper);
+                lines.push(...newline);
+            }
+            if (lengthBase > 0) {
+                lines.push(...lineBase);
+                if (lengthLower > 0) {
+                    lines.push(...newline);
+                }
+            }
+            if (lengthLower > 0) {
+                lines.push(...lineLower);
+                lines.push(...newline);
+            }
         }
-        return lines;
+        return { lines, lineCounts };
     }
 }
