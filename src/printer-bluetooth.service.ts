@@ -172,7 +172,6 @@ export class PrinterBluetoothService {
     // Read & Write
 
     public async write(hexData: Uint8Array) {
-        console.log('Printer write data', this.activeUUIDs, hexData.length, 'bytes');
         if (this.builtinPrinterOutStream) {
             const byteArray = this.arrayToNativeByteArray(hexData);
             this.builtinPrinterOutStream.write(byteArray, 0, byteArray.length)

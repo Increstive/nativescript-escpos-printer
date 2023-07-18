@@ -181,8 +181,6 @@ export class ThaiThreePassEncoder {
             const lengthBase = lineBase.filter(i => i !== 32).length
             const lengthLower = lineLower.filter(i => i !== 32).length
 
-            console.log(lengthUpper, lengthBase, lengthLower)
-
             if (lengthUpper > 0) {
                 lines.push(...lineUpper);
                 lines.push(...newline);
