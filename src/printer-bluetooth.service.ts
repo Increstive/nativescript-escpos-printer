@@ -224,7 +224,12 @@ export class PrinterBluetoothService {
 
         for (let index = 0; index < devices.length; index++) {
             const d = devices[index];
-            if (d.getAddress() === '00:11:22:33:44:55') {
+            const address = d.getAddress();
+            const validAddress = [
+                '00:11:22:33:44:55',
+                'FF:FF:FF:FF:FF:FF',
+            ];
+            if (validAddress.includes(address)) {
                 device = d;
                 break;
             }
